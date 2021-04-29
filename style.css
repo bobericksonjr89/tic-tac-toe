@@ -18,7 +18,12 @@ body {
 .board-space {
     height: 200px;
     width: 200px;
+    padding: 10px;
     border-collapse: collapse;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .top {
@@ -35,4 +40,10 @@ body {
 
 .left {
     border-left: 1px solid black;
+}
+
+.game-marker {
+    font-size: 100px;
+    padding: 30px;
+    cursor: pointer;
 }
