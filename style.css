@@ -1,0 +1,38 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#board { /* need to account for padding and borders */
+    margin-top: 160px;
+    height: 620px;
+    width: 622px;
+
+    padding: 10px;
+
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.board-space {
+    height: 200px;
+    width: 200px;
+    border-collapse: collapse;
+}
+
+.top {
+    border-top: 1px solid black;
+}
+
+.right {
+    border-right: 1px solid black;
+}
+
+.bottom {
+    border-bottom: 1px solid black;
+}
+
+.left {
+    border-left: 1px solid black;
+}
