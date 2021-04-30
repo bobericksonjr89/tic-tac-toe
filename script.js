@@ -1,6 +1,14 @@
+// factory
+const Person = function(name, icon) {
+    const getName = () => name;
+    const getIcon = () => icon;
+
+    return {getName, getIcon};
+};
+
 // module
 const gameBoard = (function() {
-    const board = ['X', 'O', 'X', 'O', 'X', 'O', 'X', 'O', 'X'];
+    const board = ['', '', '', '', '', '', '', '', ''];
     return {board};
 })();
 
@@ -8,26 +16,48 @@ const gameBoard = (function() {
 const displayController = (function() {
 
     //DOM
-    const spaceArray = document.querySelectorAll('.board-space')
+    const boardSpaces = document.querySelectorAll('.board-space')
 
-    function renderBoard(board) {
+    //Events
+    boardSpaces.forEach(space=> space.addEventListener('click', markSpace));
+
+    let turn = 0;
+
+    const player1 = Person("Player 1", "X");
+    const player2 = Person("Player 2", "O");
+
+    //functions
+    function markSpace(e) {
+        const spaceIndex = e.target.dataset.index;
+        if (gameBoard.board[spaceIndex] === '') {
+            const icon = whoseTurn();
+            gameBoard.board[spaceIndex] = icon;
+            renderBoard(gameBoard.board);     
+            detectWin();
+        }       
+    }
+
+    function whoseTurn() {
+        turn++;
+        if (turn % 2 !== 0) {
+            return player1.getIcon();
+        } else {
+            return player2.getIcon();
+        }
+    }
+
+    function detectWin() {
+
+    };
+
+    function renderBoard() {
         let index = 0;
-        board.forEach(space => populateBoard(space, index++));
+        gameBoard.board.forEach(marker => populateBoard(marker, index++));
     }
 
-    function populateBoard(space, index) {
-        let para = document.createElement('p');
-        para.innerText = space;
-        para.className = 'game-marker';
-
-        spaceArray[index].appendChild(para);
-        console.log(spaceArray[index]);
+    function populateBoard(marker, index) {
+        boardSpaces[index].innerText = marker;
     }
 
-    renderBoard(gameBoard.board);
+    renderBoard();
 })();
-
-// factory
-const Person = function(name) {
-
-};

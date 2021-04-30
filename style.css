@@ -24,6 +24,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+
+    font-size: 160px;
+    font-family:Arial, Helvetica, sans-serif;
+    cursor: pointer;
 }
 
 .top {
@@ -43,7 +47,8 @@ body {
 }
 
 .game-marker {
-    font-size: 100px;
+    font-size: 160px;
+    font-family:Arial, Helvetica, sans-serif;
     padding: 30px;
     cursor: pointer;
 }
