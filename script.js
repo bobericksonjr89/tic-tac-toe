@@ -16,29 +16,94 @@ const Person = function(name, icon) {
 };
 
 // module - controls the flow
-const displayController = (function() {
+const gameController = (function() {
 
     //DOM
     const boardSpaces = document.querySelectorAll('.board-space')
+    const nameButtons = document.querySelectorAll('.player-button');
+    const nameFields = document.querySelectorAll('.player-input');
+    const playerSelection = document.querySelector('.player-selection');
 
     //Events
-    boardSpaces.forEach(space=> space.addEventListener('click', whoseTurn));
+    
+    nameButtons.forEach(button => button.addEventListener('click', assignName));
+    nameFields.forEach(field => field.addEventListener('keyup', detectEnter));
 
-    let turn = 0;
+    // variables
+    let turn;
+    const people = [];
 
-    const player1 = Person("Player 1", "X");
-    const player2 = Person("Player 2", "O");
+    function startGame() {
+        document.querySelector("#board").style.display = 'flex';
+        turn = 0;
+        boardSpaces.forEach(space => space.addEventListener('click', whoseTurn));
+    }
+
+    function detectEnter(e) {
+        if (e.keyCode === 13) {
+         e.preventDefault();
+         e.target.nextElementSibling.click();
+        }
+    }
+
+    function assignName(e) {
+        const name = e.target.previousElementSibling.value;
+        const player = e.target.previousElementSibling.name;
+
+        if (player === "X") {
+            people[0] = Person(name, player);
+        } else {
+            people[1] = Person(name, player);
+        }
+
+        const parentElement = e.target.parentElement;
+
+        parentElement.classList.remove('fade-in')
+        parentElement.style.animationPlayState = "running";
+        parentElement.addEventListener('animationend', (e) => {
+            populateName(e, player, name)
+        });
+
+        if (people.length == 2) {
+            setTimeout(startGame, 1500);
+        }
+    }
+
+    function populateName(e, player, name) {
+        console.log(this, e, player, name);
+        const playerGroupDiv = e.target;
+        console.log(playerGroupDiv);
+        playerGroupDiv.className = 'fade-in';
+        playerGroupDiv.classList.add('player-name');
+        playerGroupDiv.innerHTML = '';
+
+        const para = document.createElement('p');
+        para.innerText = `${name} is`;
+        para.className = 'name-header';
+        playerGroupDiv.appendChild(para)
+
+        const header = document.createElement('h2');
+        header.innerText = player;
+        header.className = "player-header";
+        if (header.innerText === 'X') {
+            header.style.color = "var(--color-green)";
+        } else {
+            header.style.color = "var(--color-magenta)";
+        }
+        playerGroupDiv.appendChild(header);
+    }
 
     function whoseTurn(e) {
         const spaceIndex = e.target.dataset.index;
+        console.log(turn, spaceIndex, people, gameBoard.boardArray[spaceIndex]);
         if (gameBoard.boardArray[spaceIndex] === '') {
             turn++;
             if (turn % 2 !== 0) {
-                player1.markSpace(spaceIndex);
-                checkTurns(turn, player1)
+                people[0].markSpace(spaceIndex);
+                checkTurns(turn, people[0])
             } else {
-                player2.markSpace(spaceIndex);
-                checkTurns(turn, player2);
+                people[1].markSpace(spaceIndex);
+                checkTurns(turn, people[1]);
             }
             gameBoard.renderBoard();
         };
@@ -47,15 +112,14 @@ const displayController = (function() {
     function checkTurns(turn, player) {
         if (turn >= 5) {
             if (detectWin()) {
-                console.log(`${player.getName()} wins!`)
-                endGame();
+                endGame(player);
             } else if (turn == 9) {
                 console.log("It's a tie!")
             }
         }
     }
 
-    function detectWin() {  // MAGIC SQUARE ??
+    function detectWin() { 
         const scoreArray = gameBoard.scoreArray;
 
         // row 1
@@ -107,28 +171,61 @@ const displayController = (function() {
         return false;
     };
 
-    function endGame() {
+    function endGame(player) {
         boardSpaces.forEach(space=> space.removeEventListener('click', whoseTurn));
+
+        setTimeout(blurWindow, 500);
+        const playAgain = document.createElement('button');
+        playAgain.innerText = "Play Again"
+        playAgain.className = "play-again";
+        playAgain.addEventListener('click', restartGame);
+
+        const header = document.querySelector('header');
+        header.insertAdjacentElement('afterend', playAgain)
     }
 
-    return {boardSpaces};
+    function blurWindow() {
+        document.body.classList.add('blur');
+    }
+
+    function restartGame() {
+        document.body.classList.remove('blur');
+        gameBoard.resetBoard();
+    }
+
+    return {boardSpaces, startGame};
 })();
 
 // module - board rendering and updating
 const gameBoard = (function() {
-    const boardArray = ['', '', '', '', '', '', '', '', ''];
-    const scoreArray = [];
+    let boardArray = ['', '', '', '', '', '', '', '', ''];
+    let scoreArray = [];
+
+    function resetBoard() {
+        boardArray = ['', '', '', '', '', '', '', '', ''];
+        scoreArray = [];
+        renderBoard();
+        gameController.startGame();
+    }
+
 
     function renderBoard() {
+        console.log(boardArray, scoreArray);
         let index = 0;
         boardArray.forEach(marker => populateBoard(marker, index++));
     }
 
     function populateBoard(marker, index) {
-        displayController.boardSpaces[index].innerText = marker;
+        gameController.boardSpaces[index].innerText = marker;
+        if (marker === "X") {
+            gameController.boardSpaces[index].style.color = 'var(--color-green)';
+        } else if (marker === "O") {
+            gameController.boardSpaces[index].style.color = 'var(--color-magenta)';
+        }
     }
+    
 
     renderBoard();
 
-    return {boardArray, scoreArray, renderBoard};
+    return {boardArray, scoreArray, renderBoard, resetBoard};
 })();

@@ -9,7 +9,22 @@
 	<title>Tic Tac Toe</title>
 </head>
 <body>
-	<div id="board">
+	<header>
+		<h1 class="header-header">Tic Tac Toe</h1>
+		<div class="player-selection">
+			<div class="player-group fade-in fade-out">
+				<label for="X" class="player-header">X</label>
+				<input class="player-input" name="X" type="text" maxlength="25" placeholder="Player X">
+				<button class="player-button">Submit</button>
+			</div>
+			<div class="player-group fade-in fade-out">
+				<label for="O" class="player-header">O</label>
+				<input class="player-input" name="O" type="text" maxlength="25" placeholder="Player O">
+				<button class="player-button">Submit</button>
+			</div>
+		</div>
+	</header>
+	<div id="board" class="fade-in">
 		<div data-index="0" class="board-space bottom right"></div>
 		<div data-index="1" class="board-space left bottom right"></div>
 		<div data-index="2" class="board-space left bottom"></div>
@@ -20,6 +35,9 @@
 		<div data-index="7" class="board-space top right left"></div>
 		<div data-index="8" class="board-space top left"></div>
 	</div>
+	<footer>
+
+	</footer>
 	<script src="script.js"></script>
 </body>
 </html>
