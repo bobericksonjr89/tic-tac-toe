@@ -22,7 +22,7 @@ const gameController = (function() {
     const boardSpaces = document.querySelectorAll('.board-space')
     const nameButtons = document.querySelectorAll('.player-button');
     const nameFields = document.querySelectorAll('.player-input');
-    const playerSelection = document.querySelector('.player-selection');
+    const footer = document.querySelector('footer');
 
     //Events
     
@@ -70,9 +70,7 @@ const gameController = (function() {
     }
 
     function populateName(e, player, name) {
-        console.log(this, e, player, name);
         const playerGroupDiv = e.target;
-        console.log(playerGroupDiv);
         playerGroupDiv.className = 'fade-in';
         playerGroupDiv.classList.add('player-name');
         playerGroupDiv.innerHTML = '';
@@ -95,7 +93,6 @@ const gameController = (function() {
 
     function whoseTurn(e) {
         const spaceIndex = e.target.dataset.index;
-        console.log(turn, spaceIndex, people, gameBoard.boardArray[spaceIndex]);
         if (gameBoard.boardArray[spaceIndex] === '') {
             turn++;
             if (turn % 2 !== 0) {
@@ -114,7 +111,7 @@ const gameController = (function() {
             if (detectWin()) {
                 endGame(player);
             } else if (turn == 9) {
-                console.log("It's a tie!")
+                endGame('tie')
             }
         }
     }
@@ -173,23 +170,32 @@ const gameController = (function() {
 
     function endGame(player) {
         boardSpaces.forEach(space=> space.removeEventListener('click', whoseTurn));
+        setTimeout(blurWindow, 500, player);
+    }
 
-        setTimeout(blurWindow, 500);
+    function blurWindow(player) {
+        document.body.classList.add('blur');
+        const winnerMessage = document.createElement('p');
+        if (player === 'tie') {
+            winnerMessage.innerText = "It's a tie!";
+        } else {
+            winnerMessage.innerText = `${player.getName()} won the game!`;
+        }
+        winnerMessage.className = "winner-message";
         const playAgain = document.createElement('button');
         playAgain.innerText = "Play Again"
         playAgain.className = "play-again";
         playAgain.addEventListener('click', restartGame);
-
-        const header = document.querySelector('header');
-        header.insertAdjacentElement('afterend', playAgain)
-    }
-
-    function blurWindow() {
-        document.body.classList.add('blur');
+        footer.appendChild(winnerMessage);
+        footer.appendChild(playAgain);
     }
 
     function restartGame() {
         document.body.classList.remove('blur');
+        const winnerMessage = document.querySelector('.winner-message');
+        const playAgain = document.querySelector('.play-again');
+        footer.removeChild(winnerMessage);
+        footer.removeChild(playAgain);
         gameBoard.resetBoard();
     }
 
@@ -202,15 +208,20 @@ const gameBoard = (function() {
     let scoreArray = [];
 
     function resetBoard() {
-        boardArray = ['', '', '', '', '', '', '', '', ''];
-        scoreArray = [];
+        for (let i = 0; i < boardArray.length; i++) {
+            boardArray[i] = '';
+        }
+
+        for (let i = 0; i < scoreArray.length; i++) {
+            scoreArray.pop();          
+        }
+
         renderBoard();
         gameController.startGame();
     }
 
 
     function renderBoard() {
-        console.log(boardArray, scoreArray);
         let index = 0;
         boardArray.forEach(marker => populateBoard(marker, index++));
     }

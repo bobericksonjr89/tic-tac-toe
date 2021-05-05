@@ -3,19 +3,16 @@
     --color-magenta: #D827D5;
     --color-orange: #D88227;
     --color-green: #27D82A;
-
+    --color-light-orange: #fdeddb;
     --color-dark-blue: #15406e;
-}
-
-:focus {
-
 }
 
 /* styling */
 
 body { 
     font-family: Arial, Helvetica, sans-serif;
-    transition: all 500ms ease-in;
+    transition: all 500ms ease-in-out;
+    background-color: var(--color-light-orange);
 }
 
 h1 {
@@ -27,10 +24,12 @@ h1 {
 
 .name-header {
     font-size: 30px;
+    font-weight: 1000;
 }
 
 .player-header {
-    font-size: 40px;
+    font-size: 50px;
+    font-weight: 1000;
     padding: 0 10px;
 }
 
@@ -57,9 +56,10 @@ label[for="O"] {
 
 .player-input {
     height: 30px;
+    width: 300px;
     border: 2px solid var(--color-dark-blue);
     border-radius: 20px;
-    padding: 0 10px;
+    padding: 5px 10px;
     font-size: 20px;
 }
 
@@ -78,7 +78,7 @@ button {
     font-size: 20px;
     color: white;
     box-shadow: 1px 1px 3px 1px var(--color-dark-blue);
-    transition: all 0.30s ease-in-out;
+    transition: all 500ms ease-in-out;
 }
 
 button:hover{
@@ -89,18 +89,27 @@ button:active {
     transform: scale(.95);
 }
 
-.play-again {
-    width: 120px;
-}
-
 .board-space {
     font-size: 160px;
- 
 }
 
 .game-marker {
     font-size: 160px;
     font-family:Arial, Helvetica, sans-serif;
+}
+
+.play-again {
+    position: relative;
+    bottom: 360px;
+    width: 120px;
+    -webkit-animation: zoomIn 1s;
+    animation: zoomIn 1s;
+    animation-fill-mode: forwards;
+}
+
+.winner-message {
+    font-size: 70px;
+    font-weight: 800;
 }
 
 /* layout */
@@ -149,6 +158,10 @@ header {
     align-items: center;
 }
 
+.player-button {
+    margin-top: 15px;
+}
+
 #board { /* need to account for padding and borders */
     height: 620px;
     width: 622px;
@@ -189,15 +202,31 @@ header {
     cursor: pointer;
 }
 
+footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 0;
+}
+
+.winner-message {
+    position: relative;
+    bottom: 400px;
+}
 /* animations */
 
-.blur {
-    filter: blur(2px);
+.blur > *:not(footer) {
+    transition: all 500ms ease-in-out;
+    filter: blur(3px);
 }
 
 @-webkit-keyframes fadeIn {
-    from { opacity: 0; }
-      to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 @keyframes fadeIn {
     from {
@@ -224,4 +253,23 @@ header {
     to {
         opacity: 0;
     }
+}
+
+@keyframes zoomIn {
+    from {
+        transform: scale(0);
+    }
+    to {
+        transform: scale(2.2);
+    }
+}
+
+@-webkit-keyframes zoomIn{
+    from {
+        transform: scale(0);
+    }
+    to {
+        transform: scale(2.2);
+    }
+}
 }
