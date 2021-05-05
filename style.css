@@ -7,7 +7,9 @@
     --color-dark-blue: #15406e;
 }
 
-/* styling */
+/*---------------------
+   styling
+---------------------*/
 
 body { 
     font-family: Arial, Helvetica, sans-serif;
@@ -20,6 +22,8 @@ h1 {
     font-weight: 1000;
     letter-spacing: 2px;
     color: var(--color-blue);
+    -webkit-text-stroke-width: 2px;
+    -webkit-text-stroke-color: black;
 }
 
 .name-header {
@@ -112,7 +116,9 @@ button:active {
     font-weight: 800;
 }
 
-/* layout */
+/*--------------------- 
+    layout
+---------------------*/
 
 body {
     display: flex;
@@ -130,7 +136,7 @@ header {
 }
 
 .header-header {
-    margin: 0 0 .5em 0;
+    margin: 0 0 10px 0;
 }
 
 .player-selection {
@@ -212,8 +218,14 @@ footer {
 .winner-message {
     position: relative;
     bottom: 400px;
+    color: var(--color-blue);
+    -webkit-text-stroke-width: 2px;
+    -webkit-text-stroke-color: black;
 }
-/* animations */
+
+/*---------------------
+   animations
+---------------------*/
 
 .blur > *:not(footer) {
     transition: all 500ms ease-in-out;
@@ -240,9 +252,11 @@ footer {
 @keyframes fadeOut {
     from {
       opacity: 1;
+      height: 133px;
     }
     to {
       opacity: 0;
+      height: 58px;
     }
 }
 
@@ -272,4 +286,58 @@ footer {
         transform: scale(2.2);
     }
 }
+
+/*---------------------
+   media transition: width 2s;
+---------------------*/
+
+@media only screen and (max-width: 800px) {
+    header {
+        justify-content: center;
+        width: 90%;
+    }
+    
+    .header-header {
+        text-align: center;
+        margin: 0;
+    }
+    
+    .player-group {
+        transition: all 1s;
+    }
+
+    .player-selection {
+        flex-direction: column;
+        align-items: center;
+        height: 100%;
+    }
+
+    .player-name {
+        transition: all 1s;
+    }
+
+    #board {
+        height: 320px;
+        width: 322px;
+    }
+
+    .board-space {
+        height: 100px;
+        width: 100px;
+        font-size: 80px;
+    }
+
+    .winner-message {
+        font-size: 35px;
+        bottom: 300px;
+        text-align: center;
+        -webkit-text-stroke-width: 2px;
+        -webkit-text-stroke-color: black;
+    }
+
+    .play-again {
+        font-size: 16px;
+        padding-top: 3px;
+        bottom: 260px;
+    }
 }

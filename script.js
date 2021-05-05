@@ -64,7 +64,7 @@ const gameController = (function() {
             populateName(e, player, name)
         });
 
-        if (people.length == 2) {
+        if (people[0] && people[1]) {
             setTimeout(startGame, 1500);
         }
     }
