@@ -192,6 +192,12 @@ header {
     margin-top: 15px;
 }
 
+.button-group {
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
 #board { /* need to account for padding and borders */
     height: 620px;
     width: 622px;
