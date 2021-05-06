@@ -1,7 +1,8 @@
 // factory - what properties players have and what they can do
-const Person = function(name, icon) {
+const Person = function(name, icon, isComputer) {
     const getName = () => name;
     const getIcon = () => icon;
+    const getIsComputer = () => isComputer;
 
     const markSpace = (spaceIndex) => {
         gameBoard.boardArray[spaceIndex] = getIcon();   
@@ -12,7 +13,7 @@ const Person = function(name, icon) {
         gameBoard.scoreArray[spaceIndex] = -1;
     };
 
-    return {getName, markSpace};
+    return {getName, getIsComputer, markSpace};
 };
 
 // module - controls the flow
@@ -23,21 +24,19 @@ const gameController = (function() {
     const nameButtons = document.querySelectorAll('.player-button');
     const nameFields = document.querySelectorAll('.player-input');
     const footer = document.querySelector('footer');
+    const humanButton = document.querySelector('#human');
+    const computerButton = document.querySelector('#computer');
+    const secondGroup = document.querySelector('.second-group');
 
     //Events
-    
     nameButtons.forEach(button => button.addEventListener('click', assignName));
     nameFields.forEach(field => field.addEventListener('keyup', detectEnter));
+    humanButton.addEventListener('click', assignHuman);
+    computerButton.addEventListener('click', assignComputer);
 
     // variables
     let turn;
     const people = [];
-
-    function startGame() {
-        document.querySelector("#board").style.display = 'flex';
-        turn = 0;
-        boardSpaces.forEach(space => space.addEventListener('click', whoseTurn));
-    }
 
     function detectEnter(e) {
         if (e.keyCode === 13) {
@@ -46,14 +45,49 @@ const gameController = (function() {
         }
     }
 
+    function assignHuman(e) {
+        const parentContainer = e.target.parentElement.parentElement;
+        parentContainer.style.animationPlayState = "running";
+        parentContainer.addEventListener('animationend', (e) => {
+            parentContainer.style.display = "none";
+            secondGroup.style.display = 'flex';
+            secondGroup.style.animationPlayState = "running";
+            secondGroup.addEventListener('animationend', toggleAnimation);
+        });
+
+    }
+
+    function toggleAnimation() {
+        secondGroup.style.animationPlayState = "paused";
+        secondGroup.classList.add('fade-out');
+        console.log(secondGroup.classList)
+        secondGroup.removeEventListener('animationend', toggleAnimation);    
+    }
+
+    function assignComputer(e) {
+        const parentContainer = e.target.parentElement.parentElement;
+        parentContainer.style.animationPlayState = "running";
+
+        people[1] = Person('Computer', 'O', true);
+        parentContainer.addEventListener('animationend', (e) => {
+            populateName(e, 'O', 'Computer');
+        })
+
+        detectPeople();
+    }
+
     function assignName(e) {
+        console.log(e);
         const name = e.target.previousElementSibling.value;
+        if (!name) {
+            return;
+        }
         const player = e.target.previousElementSibling.name;
 
         if (player === "X") {
-            people[0] = Person(name, player);
+            people[0] = Person(name, player, false);
         } else {
-            people[1] = Person(name, player);
+            people[1] = Person(name, player, false);
         }
 
         const parentElement = e.target.parentElement;
@@ -64,6 +98,10 @@ const gameController = (function() {
             populateName(e, player, name)
         });
 
+        detectPeople();
+    }
+
+    function detectPeople() {
         if (people[0] && people[1]) {
             setTimeout(startGame, 1500);
         }
@@ -91,17 +129,37 @@ const gameController = (function() {
         playerGroupDiv.appendChild(header);
     }
 
+    function startGame() {
+        document.querySelector("#board").style.display = 'flex';
+        turn = 0;
+
+        boardSpaces.forEach(space => space.addEventListener('click', whoseTurn));
+    }
+
     function whoseTurn(e) {
         const spaceIndex = e.target.dataset.index;
         if (gameBoard.boardArray[spaceIndex] === '') {
             turn++;
             if (turn % 2 !== 0) {
                 people[0].markSpace(spaceIndex);
-                checkTurns(turn, people[0])
+                if(!checkTurns(turn, people[0])) { // make sure game isn't over
+                    if (people[1].getIsComputer() === true) {
+                        gameBoard.renderBoard();
+                        const index = computerOpponent.computerTurn();
+                        setTimeout(() => boardSpaces[index].click(), 500);
+                        //people[1].markSpace(computerOpponent.computerTurn());
+                        //turn++;
+                        //setTimeout(gameBoard.renderBoard(), 1000);
+                        //console.log(turn);
+                        //checkTurns(turn, people[1]);
+                        return;
+                    }
+                }
             } else {
                 people[1].markSpace(spaceIndex);
                 checkTurns(turn, people[1]);
             }
+
             gameBoard.renderBoard();
         };
     }
@@ -110,10 +168,13 @@ const gameController = (function() {
         if (turn >= 5) {
             if (detectWin()) {
                 endGame(player);
+                return true;
             } else if (turn == 9) {
                 endGame('tie')
+                return true;
             }
         }
+        return false;
     }
 
     function detectWin() { 
@@ -170,7 +231,7 @@ const gameController = (function() {
 
     function endGame(player) {
         boardSpaces.forEach(space=> space.removeEventListener('click', whoseTurn));
-        setTimeout(blurWindow, 500, player);
+        setTimeout(blurWindow, 200, player);
     }
 
     function blurWindow(player) {
@@ -196,6 +257,7 @@ const gameController = (function() {
         const playAgain = document.querySelector('.play-again');
         footer.removeChild(winnerMessage);
         footer.removeChild(playAgain);
+
         gameBoard.resetBoard();
     }
 
@@ -212,7 +274,7 @@ const gameBoard = (function() {
             boardArray[i] = '';
         }
 
-        for (let i = 0; i < scoreArray.length; i++) {
+        for (let i = 0; i < 9; i++) {
             scoreArray.pop();          
         }
 
@@ -239,4 +301,27 @@ const gameBoard = (function() {
     renderBoard();
 
     return {boardArray, scoreArray, renderBoard, resetBoard};
+})();
+
+// module - AI
+const computerOpponent = (function () {
+
+    // variable
+    let randomInt;
+
+    function getRandomInt() { 
+        min = Math.ceil(0);
+        max = Math.floor(9);
+        return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+      }
+
+    function computerTurn() {
+        do {
+            randomInt = getRandomInt();
+        } while (gameBoard.boardArray[randomInt] != '');
+        return randomInt;
+    }
+
+    return {computerTurn};
+
 })();
