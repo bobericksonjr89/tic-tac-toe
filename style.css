@@ -80,6 +80,7 @@ button {
     height: 30px;
     width: 110px;
     font-size: 20px;
+    text-align: center;
     color: white;
     box-shadow: 1px 1px 3px 1px var(--color-dark-blue);
     transition: all 500ms ease-in-out;
