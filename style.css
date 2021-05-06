@@ -367,7 +367,7 @@ footer {
 
     .play-again {
         font-size: 16px;
-        padding-top: 3px;
         bottom: 260px;
+        height: 35px;
     }
 }
