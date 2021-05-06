@@ -37,7 +37,10 @@ const gameController = (function() {
     // variables
     let turn;
     const people = [];
+    const MIN_TURNS = 5;  // minimum turns before a win
+    const MAX_TURNS = 9; 
 
+    // functions
     function detectEnter(e) {
         if (e.keyCode === 13) {
          e.preventDefault();
@@ -54,7 +57,6 @@ const gameController = (function() {
             secondGroup.style.animationPlayState = "running";
             secondGroup.addEventListener('animationend', toggleAnimation);
         });
-
     }
 
     function toggleAnimation() {
@@ -132,7 +134,6 @@ const gameController = (function() {
     function startGame() {
         document.querySelector("#board").style.display = 'flex';
         turn = 0;
-
         boardSpaces.forEach(space => space.addEventListener('click', whoseTurn));
     }
 
@@ -147,11 +148,6 @@ const gameController = (function() {
                         gameBoard.renderBoard();
                         const index = computerOpponent.computerTurn();
                         setTimeout(() => boardSpaces[index].click(), 500);
-                        //people[1].markSpace(computerOpponent.computerTurn());
-                        //turn++;
-                        //setTimeout(gameBoard.renderBoard(), 1000);
-                        //console.log(turn);
-                        //checkTurns(turn, people[1]);
                         return;
                     }
                 }
@@ -165,11 +161,11 @@ const gameController = (function() {
     }
 
     function checkTurns(turn, player) {
-        if (turn >= 5) {
+        if (turn >= MIN_TURNS) {
             if (detectWin()) {
                 endGame(player);
                 return true;
-            } else if (turn == 9) {
+            } else if (turn === MAX_TURNS) {
                 endGame('tie')
                 return true;
             }
@@ -182,52 +178,59 @@ const gameController = (function() {
 
         // row 1
         let score = scoreArray[0] + scoreArray[1] + scoreArray[2];
-        if (score === 3 || score === -3) {
+        if (checkScore(score)) {
             return true;
         } 
         // row 2
         score = scoreArray[3] + scoreArray[4] + scoreArray[5];
-        if (score === 3 || score === -3) {
+        if (checkScore(score)) {
             return true;
         } 
 
         // row 2
         score = scoreArray[6] + scoreArray[7] + scoreArray[8];
-        if (score === 3 || score === -3) {
+        if (checkScore(score)) {
             return true;
         } 
 
         // column 1
         score = scoreArray[0] + scoreArray[3] + scoreArray[6];
-        if (score === 3 || score === -3) {
+        if (checkScore(score)) {
             return true;
         } 
 
         // column 2
         score = scoreArray[1] + scoreArray[4] + scoreArray[7];
-        if (score === 3 || score === -3) {
+        if (checkScore(score)) {
             return true;
         } 
 
         // column 3
         score = scoreArray[2] + scoreArray[5] + scoreArray[8];
-        if (score === 3 || score === -3) {
+        if (checkScore(score)) {
             return true;
         } 
         
         // diag 1
         score = scoreArray[0] + scoreArray[4] + scoreArray[8];
-        if (score === 3 || score === -3) {
+        if (checkScore(score)) {
             return true;
         } 
 
         // diag 2
         score = scoreArray[2] + scoreArray[4] + scoreArray[6];
-        if (score === 3 || score === -3) {
+        if (checkScore(score)) {
             return true;
         } 
         return false;
     };
+
+    function checkScore(score) {
+        if (score === 3 || score === -3) {
+            return true;
+        }
+        return false;
+    }
 
     function endGame(player) {
         boardSpaces.forEach(space=> space.removeEventListener('click', whoseTurn));
@@ -266,9 +269,12 @@ const gameController = (function() {
 
 // module - board rendering and updating
 const gameBoard = (function() {
+
+    // variables
     let boardArray = ['', '', '', '', '', '', '', '', ''];
     let scoreArray = [];
 
+    // functions
     function resetBoard() {
         for (let i = 0; i < boardArray.length; i++) {
             boardArray[i] = '';
@@ -309,6 +315,7 @@ const computerOpponent = (function () {
     // variable
     let randomInt;
 
+    // functions
     function getRandomInt() { 
         min = Math.ceil(0);
         max = Math.floor(9);
