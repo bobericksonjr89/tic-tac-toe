@@ -21,7 +21,8 @@ const gameController = (function() {
 
     //DOM
     const boardSpaces = document.querySelectorAll('.board-space')
-    const nameButtons = document.querySelectorAll('.player-button');
+    const player1NameButton = document.querySelector('.player1-name-button');
+    const player2NameButton = document.querySelector('.player2-name-button');
     const nameFields = document.querySelectorAll('.player-input');
     const footer = document.querySelector('footer');
     const humanButton = document.querySelector('#human');
@@ -29,7 +30,8 @@ const gameController = (function() {
     const secondGroup = document.querySelector('.second-group');
 
     //Events
-    nameButtons.forEach(button => button.addEventListener('click', assignName));
+    player1NameButton.addEventListener('click', assignName);
+    player2NameButton.addEventListener('click', waitForAnimationToEnd);
     nameFields.forEach(field => field.addEventListener('keyup', detectEnter));
     humanButton.addEventListener('click', assignHuman);
     computerButton.addEventListener('click', assignComputer);
@@ -52,6 +54,7 @@ const gameController = (function() {
         const parentContainer = e.target.parentElement.parentElement;
         parentContainer.style.animationPlayState = "running";
         parentContainer.addEventListener('animationend', (e) => {
+            parentContainer.style.animationPlayState = "paused";
             parentContainer.style.display = "none";
             secondGroup.style.display = 'flex';
             secondGroup.style.animationPlayState = "running";
@@ -62,7 +65,6 @@ const gameController = (function() {
     function toggleAnimation() {
         secondGroup.style.animationPlayState = "paused";
         secondGroup.classList.add('fade-out');
-        console.log(secondGroup.classList)
         secondGroup.removeEventListener('animationend', toggleAnimation);    
     }
 
@@ -78,6 +80,17 @@ const gameController = (function() {
         detectPeople();
     }
 
+    function waitForAnimationToEnd(e) {
+        console.log(e);
+        if (e.target.parentElement.style.animationPlayState === "running") {
+            console.log("running")
+            return;
+        } else {
+            assignName(e);
+        }
+        
+    }
+
     function assignName(e) {
         console.log(e);
         const name = e.target.previousElementSibling.value;
@@ -85,6 +98,7 @@ const gameController = (function() {
             return;
         }
         const player = e.target.previousElementSibling.name;
+        console.log(name, player);
 
         if (player === "X") {
             people[0] = Person(name, player, false);
