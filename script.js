@@ -38,6 +38,7 @@ const gameController = (function() {
 
     // variables
     let turn;
+    let isGamePaused = false;
     const people = [];
     const MIN_TURNS = 5;  // minimum turns before a win
     const MAX_TURNS = 9; 
@@ -87,8 +88,7 @@ const gameController = (function() {
             return;
         } else {
             assignName(e);
-        }
-        
+        }  
     }
 
     function assignName(e) {
@@ -152,6 +152,9 @@ const gameController = (function() {
     }
 
     function whoseTurn(e) {
+        if (isGamePaused === true) {
+            return;
+        }
         const spaceIndex = e.target.dataset.index;
         if (gameBoard.boardArray[spaceIndex] === '') {
             turn++;
@@ -161,7 +164,8 @@ const gameController = (function() {
                     if (people[1].getIsComputer() === true) {
                         gameBoard.renderBoard();
                         const index = computerOpponent.computerTurn();
-                        setTimeout(() => boardSpaces[index].click(), 500);
+                        isGamePaused = true; // pause the game so human player can't click
+                        setTimeout(computerClick, 500, index);
                         return;
                     }
                 }
@@ -172,6 +176,11 @@ const gameController = (function() {
 
             gameBoard.renderBoard();
         };
+    }
+
+    function computerClick(index) {
+        isGamePaused = false;
+        boardSpaces[index].click();
     }
 
     function checkTurns(turn, player) {
