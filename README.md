@@ -1,6 +1,6 @@
 # Tic Tac Toe
 
-Score three in a row, column, or diagnal to win.  Play against a local human opponent, or the computer.
+Score three in a row, column, or diagonal to win.  Play against a local human opponent, or the computer.
 
 ## Features
 
